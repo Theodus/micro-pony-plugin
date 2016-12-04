@@ -16,7 +16,6 @@ local indent = {
   "if",
   "in",
   "interface",
-  "match",
   "new",
   "object",
   "recover",
@@ -42,6 +41,18 @@ function preInsertNewline(v)
   local line = v.Buf:Line(v.Cursor.Y)
   local ws = GetLeadingWhitespace(line)
   local x = v.Cursor.X
+
+  if 
+    (string.sub(line, x+1, x+1) == "}") and 
+    (string.find(string.sub(line, x+1), "{") == nil) 
+  then
+    v:InsertNewline(false)
+    v:OutdentLine(false)
+    v:CursorLeft(false)
+    v:InsertNewline(false)
+    v:InsertTab(false)
+    return false
+  end
 
   for _, key in pairs(indent) do
     for word in string.gmatch(string.sub(line, 1, x), "%S+") do
@@ -70,11 +81,6 @@ function onRune(r, v)
   end
 
   local line = v.Buf:Line(v.Cursor.Y)
-
-  if string.match(line, "|") and string.match(line, "=>") then
-    v:OutdentLine(false)
-    return
-  end
   
   local trimmed = line:match("^%s*(.+)")
   for _, key in pairs(unindent) do
