@@ -70,7 +70,6 @@ end
 local unindent = {
   "then",
   "else",
-  "elseif",
   "do",
   "until",
   "end"
