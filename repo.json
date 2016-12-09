@@ -1,0 +1,14 @@
+[{
+  "Name": "pony",
+  "Description": "plugin for the Pony Programming Language",
+  "Tags": ["pony"],
+  "Versions": [
+    {
+      "Version": "0.1.0",
+      "Url": "https://github.com/theodus/micro-pony-plugin/archive/0.1.0.zip",
+      "Require": {
+        "micro": ">=1.1.3"
+      }
+    }
+  ]
+}]
