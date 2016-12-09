@@ -18,6 +18,7 @@ local indent = {
   "interface",
   "new",
   "object",
+  "primitive",
   "recover",
   "ref",
   "repeat",
