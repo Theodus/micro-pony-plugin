@@ -1,4 +1,4 @@
-VERSION = "1.0.0"
+VERSION = "0.1.1"
 
 if GetOption("pony-mode") == nil then
   AddOption("pony-mode", true)
