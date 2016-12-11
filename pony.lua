@@ -48,8 +48,8 @@ function preInsertNewline(v)
     (string.find(string.sub(line, x+1), "{") == nil) 
   then
     v:InsertNewline(false)
-    v:OutdentLine(false)
-    v:CursorLeft(false)
+    v:CursorUp(false)
+    v:EndOfLine(false)
     v:InsertNewline(false)
     v:InsertTab(false)
     return false
@@ -60,7 +60,6 @@ function preInsertNewline(v)
       if word == key then
         v:InsertNewline(false)
         v:InsertTab(false)
-
         return false
       end
     end
