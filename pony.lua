@@ -1,4 +1,4 @@
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 
 if GetOption("pony-mode") == nil then
   AddOption("pony-mode", true)
@@ -39,11 +39,13 @@ function preInsertNewline(v)
     return
   end
 
+  outdented = false
+
   local line = v.Buf:Line(v.Cursor.Y)
   local ws = GetLeadingWhitespace(line)
   local x = v.Cursor.X
 
-  if 
+  if
     (string.sub(line, x+1, x+1) == "}") and 
     (string.find(string.sub(line, x+1), "{") == nil) 
   then
@@ -59,7 +61,9 @@ function preInsertNewline(v)
     for word in string.gmatch(string.sub(line, 1, x), "%S+") do
       if word == key then
         v:InsertNewline(false)
-        v:InsertTab(false)
+        if string.find(string.sub(line, 1, x+1), "end") == nil then   
+          v:InsertTab(false)
+        end
         return false
       end
     end
@@ -74,9 +78,27 @@ local unindent = {
   "end"
 }
 
+outdented = false
+
 function onRune(r, v)
+  checkOutdent(v)
+end
+
+function onBackspace(v)
+  checkOutdent(v)
+end
+
+function checkOutdent(v)
   if not GetOption("pony-mode") or not (v.Buf:FileType() == "pony") then
     return
+  end
+
+  if outdented == true then
+    v:SelectToStartOfLine(false)
+    v:IndentSelection(false)
+    v:CursorRight(false)
+    v:CursorRight(false)
+    outdented = false
   end
 
   local line = v.Buf:Line(v.Cursor.Y)
@@ -85,6 +107,7 @@ function onRune(r, v)
   for _, key in pairs(unindent) do
     if trimmed == key then
       v:OutdentLine(false)
+      outdented = true
       return
     end
   end
