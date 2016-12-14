@@ -1,4 +1,4 @@
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 if GetOption("pony-mode") == nil then
   AddOption("pony-mode", true)
@@ -93,22 +93,23 @@ function checkOutdent(v)
     return
   end
 
-  if outdented == true then
+  local line = v.Buf:Line(v.Cursor.Y)
+  
+  local trimmed = line:match("(%w+)(.*)")
+  for _, key in pairs(unindent) do
+    if trimmed == key then
+      if not outdented then
+        v:OutdentLine(false)
+        outdented = true
+      end
+      return
+    end
+  end
+  if outdented then
     v:SelectToStartOfLine(false)
     v:IndentSelection(false)
     v:CursorRight(false)
     v:CursorRight(false)
     outdented = false
-  end
-
-  local line = v.Buf:Line(v.Cursor.Y)
-  
-  local trimmed = line:match("^%s*(.+)")
-  for _, key in pairs(unindent) do
-    if trimmed == key then
-      v:OutdentLine(false)
-      outdented = true
-      return
-    end
   end
 end
