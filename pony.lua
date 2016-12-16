@@ -39,8 +39,6 @@ function preInsertNewline(v)
     return
   end
 
-  outdented = false
-
   local line = v.Buf:Line(v.Cursor.Y)
   local ws = GetLeadingWhitespace(line)
   local x = v.Cursor.X
@@ -79,7 +77,7 @@ local unindent = {
   "end"
 }
 
-outdented = false
+local outdented = false
 
 function onRune(r, v)
   checkOutdent(v)
@@ -95,22 +93,24 @@ function checkOutdent(v)
   end
 
   local line = v.Buf:Line(v.Cursor.Y)
-  
+
   local trimmed = line:match("(%w+)(.*)")
+  if trimmed == nil then return end
+  
   for _, key in pairs(unindent) do
     if trimmed == key then
       if not outdented then
-        v:OutdentLine(false)
         outdented = true
+        v:OutdentLine(false)
       end
       return
     end
   end
   if outdented then
+    outdented = false
     v:SelectToStartOfLine(false)
     v:IndentSelection(false)
     v:CursorRight(false)
     v:CursorRight(false)
-    outdented = false
   end
 end
