@@ -77,8 +77,6 @@ local unindent = {
   "end"
 }
 
-local outdented = false
-
 function onRune(r, v)
   checkOutdent(v)
 end
@@ -87,27 +85,30 @@ function onBackspace(v)
   checkOutdent(v)
 end
 
+local outdented = {}
+
 function checkOutdent(v)
   if not GetOption("pony-mode") or not (v.Buf:FileType() == "pony") then
     return
   end
 
-  local line = v.Buf:Line(v.Cursor.Y)
-
+  local lineN = v.Cursor.Y
+  local line = v.Buf:Line(lineN)
+  
   local trimmed = line:match("(%w+)(.*)")
-  if trimmed == nil then return end
   
   for _, key in pairs(unindent) do
     if trimmed == key then
-      if not outdented then
-        outdented = true
+      if outdented[lineN] == nil then
+        outdented[lineN] = true
         v:OutdentLine(false)
       end
       return
     end
   end
-  if outdented then
-    outdented = false
+
+  if outdented[lineN] ~= nil then
+    outdented[lineN] = nil
     v:SelectToStartOfLine(false)
     v:IndentSelection(false)
     v:CursorRight(false)
