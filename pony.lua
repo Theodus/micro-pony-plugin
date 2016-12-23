@@ -77,6 +77,8 @@ local unindent = {
   "end"
 }
 
+--[[
+
 function onRune(r, v)
   checkOutdent(v)
 end
@@ -85,6 +87,8 @@ function onBackspace(v)
   checkOutdent(v)
 end
 
+-- lineN can change
+-- TODO: use indentation level of last line with an indent word
 local outdented = {}
 
 function checkOutdent(v)
@@ -96,6 +100,16 @@ function checkOutdent(v)
   local line = v.Buf:Line(lineN)
   
   local trimmed = line:match("(%w+)(.*)")
+
+  local count = 0
+  for _ in pairs(outdented) do count = count + 1 end
+
+  isod = tostring(outdented[lineN] == nil)
+  if trimmed == nil then
+    messenger:Message("nil " .. isod .. " len=" .. count)
+  else
+    messenger:Message(trimmed .. " " .. isod .. " len=" .. count)
+  end
   
   for _, key in pairs(unindent) do
     if trimmed == key then
@@ -115,3 +129,4 @@ function checkOutdent(v)
     v:CursorRight(false)
   end
 end
+]]--
